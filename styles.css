@@ -51,6 +51,33 @@ nav.crumbs a { color: var(--ink-soft); text-decoration: none; }
 nav.crumbs a:hover, nav.crumbs a:focus-visible { color: var(--ink); }
 nav.crumbs .hub-link::before { content: "← "; }
 
+/* ---- section nav (Restaurants / All Stars Awarded) ---- */
+.section-nav {
+  display: flex;
+  gap: 0.6rem;
+  padding: 1rem 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.section-nav-item {
+  display: inline-block;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+a.section-nav-item:hover, a.section-nav-item:focus-visible {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+.section-nav-item.active {
+  color: var(--paper);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
 /* ---- filter toolbar ---- */
 .toolbar {
   display: flex;
