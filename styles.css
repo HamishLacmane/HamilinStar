@@ -32,7 +32,7 @@ body {
   font-family: Consolas, "Cascadia Code", "SF Mono", ui-monospace, monospace;
 }
 
-.page { max-width: 860px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3rem) 4rem; }
+.page { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3rem) 4rem; }
 
 .topbar {
   display: flex;
@@ -73,63 +73,92 @@ nav.crumbs .hub-link::before { content: "← "; }
 .count { color: var(--ink-soft); font-size: 0.78rem; margin: 1rem 0 0.75rem; }
 .empty { color: var(--ink-soft); padding: 2rem 0; }
 
-/* ---- restaurant list ---- */
-.list { display: flex; flex-direction: column; gap: 0.9rem; padding-bottom: 2rem; }
-
-.card {
-  background: var(--paper-raised);
+/* ---- restaurant table ---- */
+.table-wrap {
+  overflow-x: auto;
   border: 1px solid var(--hairline);
   border-radius: 4px;
-  padding: 1rem 1.15rem;
+  background: var(--paper-raised);
 }
-.card-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-.card h2 {
-  font-size: 1.05rem;
-  margin: 0;
-  line-height: 1.3;
-}
-.card h2 a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--hairline); }
-.card h2 a:hover, .card h2 a:focus-visible { border-color: var(--ink); }
 
-.rstatus {
+.rtable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.rtable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--ink);
+  color: var(--paper-raised);
+  text-align: left;
   font-family: Consolas, monospace;
   font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 0.65rem 0.9rem;
+  white-space: nowrap;
+}
+
+.rtable tbody tr {
+  border-top: 1px solid var(--hairline);
+}
+.rtable tbody tr:nth-child(even) { background: rgba(0,0,0,0.025); }
+.rtable tbody tr:hover { background: rgba(0,0,0,0.05); }
+
+.rtable td {
+  padding: 0.75rem 0.9rem;
+  vertical-align: top;
+}
+
+.col-name { min-width: 13rem; }
+.rname { font-size: 0.95rem; }
+.rname a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--hairline); }
+.rname a:hover, .rname a:focus-visible { border-color: var(--ink); }
+
+.col-loc { color: var(--ink-soft); font-size: 0.78rem; min-width: 10rem; }
+.col-cuisine, .col-dining { min-width: 11rem; }
+.col-food { min-width: 12rem; }
+
+.rstatus {
+  display: block;
+  font-family: Consolas, monospace;
+  font-size: 0.65rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--ink-soft);
+  margin-top: 0.2rem;
 }
 
-.loc { color: var(--ink-soft); font-size: 0.78rem; margin: 0.35rem 0 0; }
-
-.stars { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
+.stars { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 .star {
   font-family: Consolas, monospace;
+  font-weight: 600;
   font-size: 0.7rem;
-  border-radius: 2px;
-  padding: 0.2rem 0.5rem;
+  border-radius: 3px;
+  padding: 0.22rem 0.55rem;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
-.star-gold   { background: #F5ECD3; color: #8A6D1D; border-color: #E3D2A0; }
-.star-silver { background: #EDEDED; color: #6B6B6B; border-color: #D8D8D8; }
-.star-bronze { background: #F1E1D3; color: #8A4E24; border-color: #E0C3A8; }
-.star-nostar { background: #F2E4E4; color: #8A2F2F; border-color: #E0C4C4; }
-.star-pending{ background: transparent; color: var(--ink-soft); border-color: var(--hairline); }
-.star-none   { background: transparent; color: var(--ink-soft); border-color: var(--hairline); font-style: italic; }
+.star-gold   { background: #F0DA9A; color: #6B4E00; border-color: #D9BE6C; }
+.star-silver { background: #DCDCDC; color: #45484B; border-color: #C2C2C2; }
+.star-bronze { background: #E3B48C; color: #6B3612; border-color: #CE9866; }
+.star-nostar { background: #E7B8B8; color: #7A1F1F; border-color: #D69A9A; }
+.star-pending{ background: transparent; color: var(--ink-soft); border-color: var(--hairline); font-weight: 400; }
+.star-none   { background: transparent; color: var(--ink-soft); border-color: var(--hairline); font-weight: 400; font-style: italic; }
 
-.tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+.tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.col-food .tags { margin-top: 0.4rem; }
 .tag {
   font-family: Consolas, monospace;
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   color: var(--ink-soft);
   border: 1px solid var(--hairline);
   border-radius: 2px;
-  padding: 0.15rem 0.45rem;
+  padding: 0.15rem 0.4rem;
+  white-space: nowrap;
 }
 .tag-meta { color: var(--ink); }
 
