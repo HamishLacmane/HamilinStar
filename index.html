@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hamilin Star</title>
-<meta name="description" content="Hamilin Star — coming soon.">
+<meta name="description" content="Hamilin Star — a filterable log of rated restaurants.">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -17,20 +17,183 @@
     </nav>
   </header>
 
-  <section class="hero">
-    <span class="soon-badge mono">Coming soon</span>
-    <h1 class="display"><!-- TODO(Hamish): headline --> placeholder text</h1>
-    <p><!-- TODO(Hamish): intro copy --></p>
+  <section class="toolbar" aria-label="Filter restaurants">
+    <input type="search" id="f-search" class="mono" placeholder="Search name, area, city…" aria-label="Search">
 
-    <div class="status-note mono">
-      Shell only — colours and the ratings-data source (Airtable? NocoDB? static file?) are still undecided. Nothing here reflects final decisions.
-    </div>
+    <select id="f-country" class="mono" aria-label="Country"><option value="">All countries</option></select>
+    <select id="f-city" class="mono" aria-label="City"><option value="">All cities</option></select>
+    <select id="f-cuisine" class="mono" aria-label="Cuisine"><option value="">All cuisines</option></select>
+    <select id="f-dining" class="mono" aria-label="Dining option"><option value="">Any dining option</option></select>
+    <select id="f-food" class="mono" aria-label="Food status">
+      <option value="">Any food status</option>
+      <option value="gold">Gold</option>
+      <option value="silver">Silver</option>
+      <option value="bronze">Bronze</option>
+      <option value="no_star">Assessed, no star</option>
+      <option value="pending">Pending review</option>
+      <option value="unreviewed">Unreviewed</option>
+    </select>
+    <select id="f-sort" class="mono" aria-label="Sort by">
+      <option value="name">Sort: Name A–Z</option>
+      <option value="gold">Sort: Most gold</option>
+      <option value="stars">Sort: Most total stars</option>
+      <option value="reviews">Sort: Most reviews</option>
+    </select>
   </section>
+
+  <p id="count" class="mono count"></p>
+
+  <section id="list" class="list" aria-live="polite"></section>
+  <p id="empty" class="mono empty" hidden>No restaurants match those filters.</p>
 
   <footer>
     <p class="mono">© 2026 Hamish Lacmane. All rights reserved.</p>
   </footer>
 
 </div>
+
+<script>
+(async function () {
+  const state = { data: [], filtered: [] };
+
+  const els = {
+    search: document.getElementById('f-search'),
+    country: document.getElementById('f-country'),
+    city: document.getElementById('f-city'),
+    cuisine: document.getElementById('f-cuisine'),
+    dining: document.getElementById('f-dining'),
+    food: document.getElementById('f-food'),
+    sort: document.getElementById('f-sort'),
+    list: document.getElementById('list'),
+    count: document.getElementById('count'),
+    empty: document.getElementById('empty'),
+  };
+
+  function populateSelect(el, values) {
+    for (const v of values) {
+      const opt = document.createElement('option');
+      opt.value = v;
+      opt.textContent = v;
+      el.appendChild(opt);
+    }
+  }
+
+  function foodTierMatch(food, tier) {
+    if (!tier) return true;
+    if (tier === 'unreviewed') return food.total === 0 && food.pending === 0 && food.no_star === 0;
+    return food[tier] > 0;
+  }
+
+  function locationLine(r) {
+    return [r.location_name, r.city, r.country].filter(Boolean).join(' · ');
+  }
+
+  function starBadges(food) {
+    const parts = [];
+    if (food.gold) parts.push(`<span class="star star-gold">${food.gold} gold</span>`);
+    if (food.silver) parts.push(`<span class="star star-silver">${food.silver} silver</span>`);
+    if (food.bronze) parts.push(`<span class="star star-bronze">${food.bronze} bronze</span>`);
+    if (food.no_star) parts.push(`<span class="star star-nostar">${food.no_star} no star</span>`);
+    if (food.pending) parts.push(`<span class="star star-pending">${food.pending} pending</span>`);
+    if (!parts.length) parts.push('<span class="star star-none">unreviewed</span>');
+    return parts.join('');
+  }
+
+  function tagList(items, cls) {
+    if (!items.length) return '';
+    return `<div class="tags">${items.map(t => `<span class="tag ${cls}">${escapeHtml(t)}</span>`).join('')}</div>`;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function render() {
+    const q = els.search.value.trim().toLowerCase();
+    const country = els.country.value;
+    const city = els.city.value;
+    const cuisine = els.cuisine.value;
+    const dining = els.dining.value;
+    const food = els.food.value;
+
+    let rows = state.data.filter(r => {
+      if (country && r.country !== country) return false;
+      if (city && r.city !== city) return false;
+      if (cuisine && !r.cuisine_tags.includes(cuisine)) return false;
+      if (dining && !r.dining_options.includes(dining)) return false;
+      if (!foodTierMatch(r.food, food)) return false;
+      if (q) {
+        const hay = [r.name, r.location_name, r.city, r.country].filter(Boolean).join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+
+    const sort = els.sort.value;
+    rows = rows.slice().sort((a, b) => {
+      if (sort === 'gold') return b.food.gold - a.food.gold || a.name.localeCompare(b.name);
+      if (sort === 'stars') return b.food.total - a.food.total || a.name.localeCompare(b.name);
+      if (sort === 'reviews') {
+        const ra = a.food.total + a.food.pending + a.food.no_star;
+        const rb = b.food.total + b.food.pending + b.food.no_star;
+        return rb - ra || a.name.localeCompare(b.name);
+      }
+      return a.name.localeCompare(b.name);
+    });
+
+    state.filtered = rows;
+    els.count.textContent = `${rows.length} of ${state.data.length} restaurants`;
+    els.empty.hidden = rows.length !== 0;
+
+    els.list.innerHTML = rows.map(r => {
+      const nameHtml = r.gmaps_url
+        ? `<a href="${escapeHtml(r.gmaps_url)}" target="_blank" rel="noopener">${escapeHtml(r.name)}</a>`
+        : escapeHtml(r.name);
+      const loc = locationLine(r);
+      const status = r.restaurant_status ? `<span class="rstatus">${escapeHtml(r.restaurant_status)}</span>` : '';
+      const extra = [];
+      if (r.service_status && r.service_status !== 'pending') extra.push(`<span class="tag tag-meta">service: ${escapeHtml(r.service_status)}</span>`);
+      if (r.hygiene_status && r.hygiene_status !== 'pending') extra.push(`<span class="tag tag-meta">hygiene: ${escapeHtml(r.hygiene_status)}</span>`);
+      return `
+        <article class="card">
+          <div class="card-head">
+            <h2 class="display">${nameHtml}</h2>
+            ${status}
+          </div>
+          ${loc ? `<p class="loc mono">${escapeHtml(loc)}</p>` : ''}
+          <div class="stars">${starBadges(r.food)}</div>
+          ${tagList(r.cuisine_tags, 'tag-cuisine')}
+          ${tagList(r.dining_options, 'tag-dining')}
+          ${extra.length ? `<div class="tags">${extra.join('')}</div>` : ''}
+        </article>`;
+    }).join('');
+  }
+
+  let data;
+  try {
+    const res = await fetch('data/restaurants.json');
+    data = await res.json();
+  } catch (err) {
+    els.count.textContent = '';
+    els.list.innerHTML = `<p class="mono empty">Couldn't load restaurant data (${escapeHtml(err.message)}).</p>`;
+    return;
+  }
+
+  state.data = data;
+
+  populateSelect(els.country, [...new Set(data.map(r => r.country).filter(Boolean))].sort());
+  populateSelect(els.city, [...new Set(data.map(r => r.city).filter(Boolean))].sort());
+  populateSelect(els.cuisine, [...new Set(data.flatMap(r => r.cuisine_tags))].sort());
+  populateSelect(els.dining, [...new Set(data.flatMap(r => r.dining_options))].sort());
+
+  for (const el of [els.search, els.country, els.city, els.cuisine, els.dining, els.food, els.sort]) {
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  }
+
+  render();
+})();
+</script>
+
 </body>
 </html>
