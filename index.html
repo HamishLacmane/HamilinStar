@@ -68,6 +68,10 @@
 
 <script>
 (async function () {
+  // Kept in sync with stars.html's SHOW_NON_FOOD flag — service/hygiene
+  // data is too sparse to show yet. Flip both back together.
+  const SHOW_NON_FOOD = false;
+
   const state = { data: [], filtered: [] };
 
   const els = {
@@ -161,8 +165,10 @@
         : escapeHtml(r.name);
       const status = r.restaurant_status ? `<span class="rstatus">${escapeHtml(r.restaurant_status)}</span>` : '';
       const extra = [];
-      if (r.service_status && r.service_status !== 'pending') extra.push(`<span class="tag tag-meta">service: ${escapeHtml(r.service_status)}</span>`);
-      if (r.hygiene_status && r.hygiene_status !== 'pending') extra.push(`<span class="tag tag-meta">hygiene: ${escapeHtml(r.hygiene_status)}</span>`);
+      if (SHOW_NON_FOOD) {
+        if (r.service_status && r.service_status !== 'pending') extra.push(`<span class="tag tag-meta">service: ${escapeHtml(r.service_status)}</span>`);
+        if (r.hygiene_status && r.hygiene_status !== 'pending') extra.push(`<span class="tag tag-meta">hygiene: ${escapeHtml(r.hygiene_status)}</span>`);
+      }
       const starsHref = `stars.html?restaurant=${encodeURIComponent(r.name)}`;
       return `
         <tr>

@@ -73,6 +73,13 @@
 
 <script>
 (async function () {
+  // Service/Hygiene data is still too sparse to be worth showing on the site
+  // (as of 2026-08-11, only a handful of restaurants have anything beyond
+  // 'pending' for either). Flip this back to true once that's built out —
+  // everything downstream already handles all 3 categories, this is the
+  // only gate.
+  const SHOW_NON_FOOD = false;
+
   const state = { data: [] };
   const restaurantMeta = new Map(); // name -> { gmaps_url }
 
@@ -177,6 +184,11 @@
   }
 
   for (const r of restaurants) restaurantMeta.set(r.name, { gmaps_url: r.gmaps_url });
+
+  if (!SHOW_NON_FOOD) {
+    data = data.filter(r => r.category === 'Food');
+    els.category.style.display = 'none';
+  }
 
   state.data = data;
 
