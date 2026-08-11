@@ -43,7 +43,20 @@
 
   <p id="count" class="mono count"></p>
 
-  <section id="list" class="list" aria-live="polite"></section>
+  <div class="table-wrap" aria-live="polite">
+    <table class="rtable">
+      <thead>
+        <tr>
+          <th class="col-name">Name</th>
+          <th class="col-loc">Location</th>
+          <th class="col-cuisine">Cuisine</th>
+          <th class="col-dining">Dining</th>
+          <th class="col-food">Food</th>
+        </tr>
+      </thead>
+      <tbody id="list"></tbody>
+    </table>
+  </div>
   <p id="empty" class="mono empty" hidden>No restaurants match those filters.</p>
 
   <footer>
@@ -155,17 +168,19 @@
       if (r.service_status && r.service_status !== 'pending') extra.push(`<span class="tag tag-meta">service: ${escapeHtml(r.service_status)}</span>`);
       if (r.hygiene_status && r.hygiene_status !== 'pending') extra.push(`<span class="tag tag-meta">hygiene: ${escapeHtml(r.hygiene_status)}</span>`);
       return `
-        <article class="card">
-          <div class="card-head">
-            <h2 class="display">${nameHtml}</h2>
+        <tr>
+          <td class="col-name">
+            <span class="rname display">${nameHtml}</span>
             ${status}
-          </div>
-          ${loc ? `<p class="loc mono">${escapeHtml(loc)}</p>` : ''}
-          <div class="stars">${starBadges(r.food)}</div>
-          ${tagList(r.cuisine_tags, 'tag-cuisine')}
-          ${tagList(r.dining_options, 'tag-dining')}
-          ${extra.length ? `<div class="tags">${extra.join('')}</div>` : ''}
-        </article>`;
+          </td>
+          <td class="col-loc mono">${loc ? escapeHtml(loc) : ''}</td>
+          <td class="col-cuisine">${tagList(r.cuisine_tags, 'tag-cuisine')}</td>
+          <td class="col-dining">${tagList(r.dining_options, 'tag-dining')}</td>
+          <td class="col-food">
+            <div class="stars">${starBadges(r.food)}</div>
+            ${extra.length ? `<div class="tags">${extra.join('')}</div>` : ''}
+          </td>
+        </tr>`;
     }).join('');
   }
 
