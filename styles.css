@@ -118,9 +118,14 @@ nav.crumbs .hub-link::before { content: "← "; }
 .rname a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--hairline); }
 .rname a:hover, .rname a:focus-visible { border-color: var(--ink); }
 
-.col-loc { color: var(--ink-soft); font-size: 0.78rem; min-width: 10rem; }
+.col-country, .col-city, .col-locname { color: var(--ink-soft); font-size: 0.78rem; min-width: 7rem; }
 .col-cuisine { min-width: 11rem; }
 .col-food { min-width: 12rem; }
+.col-category, .col-tier { min-width: 6rem; }
+.col-date { min-width: 7rem; color: var(--ink-soft); font-size: 0.78rem; }
+
+.stars-link { display: block; text-decoration: none; border-radius: 3px; margin: -0.2rem -0.3rem; padding: 0.2rem 0.3rem; }
+.stars-link:hover, .stars-link:focus-visible { background: rgba(0,0,0,0.06); outline: none; }
 
 .rstatus {
   display: block;

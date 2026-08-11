@@ -48,7 +48,9 @@
       <thead>
         <tr>
           <th class="col-name">Name</th>
-          <th class="col-loc">Location</th>
+          <th class="col-country">Country</th>
+          <th class="col-city">City</th>
+          <th class="col-locname">Location name</th>
           <th class="col-cuisine">Cuisine</th>
           <th class="col-food">Food</th>
         </tr>
@@ -66,6 +68,10 @@
 
 <script>
 (async function () {
+  // Kept in sync with stars.html's SHOW_NON_FOOD flag — service/hygiene
+  // data is too sparse to show yet. Flip both back together.
+  const SHOW_NON_FOOD = false;
+
   const state = { data: [], filtered: [] };
 
   const els = {
@@ -94,10 +100,6 @@
     if (!tier) return true;
     if (tier === 'unreviewed') return food.total === 0 && food.pending === 0 && food.no_star === 0;
     return food[tier] > 0;
-  }
-
-  function locationLine(r) {
-    return [r.location_name, r.city, r.country].filter(Boolean).join(' · ');
   }
 
   function starBadges(food) {
@@ -161,21 +163,27 @@
       const nameHtml = r.gmaps_url
         ? `<a href="${escapeHtml(r.gmaps_url)}" target="_blank" rel="noopener">${escapeHtml(r.name)}</a>`
         : escapeHtml(r.name);
-      const loc = locationLine(r);
       const status = r.restaurant_status ? `<span class="rstatus">${escapeHtml(r.restaurant_status)}</span>` : '';
       const extra = [];
-      if (r.service_status && r.service_status !== 'pending') extra.push(`<span class="tag tag-meta">service: ${escapeHtml(r.service_status)}</span>`);
-      if (r.hygiene_status && r.hygiene_status !== 'pending') extra.push(`<span class="tag tag-meta">hygiene: ${escapeHtml(r.hygiene_status)}</span>`);
+      if (SHOW_NON_FOOD) {
+        if (r.service_status && r.service_status !== 'pending') extra.push(`<span class="tag tag-meta">service: ${escapeHtml(r.service_status)}</span>`);
+        if (r.hygiene_status && r.hygiene_status !== 'pending') extra.push(`<span class="tag tag-meta">hygiene: ${escapeHtml(r.hygiene_status)}</span>`);
+      }
+      const starsHref = `stars.html?restaurant=${encodeURIComponent(r.name)}`;
       return `
         <tr>
           <td class="col-name">
             <span class="rname display">${nameHtml}</span>
             ${status}
           </td>
-          <td class="col-loc mono">${loc ? escapeHtml(loc) : ''}</td>
+          <td class="col-country mono">${r.country ? escapeHtml(r.country) : ''}</td>
+          <td class="col-city mono">${r.city ? escapeHtml(r.city) : ''}</td>
+          <td class="col-locname mono">${r.location_name ? escapeHtml(r.location_name) : ''}</td>
           <td class="col-cuisine">${tagList(r.cuisine_tags, 'tag-cuisine')}</td>
           <td class="col-food">
-            <div class="stars">${starBadges(r.food)}</div>
+            <a class="stars-link" href="${starsHref}" title="View star detail for ${escapeHtml(r.name)}">
+              <div class="stars">${starBadges(r.food)}</div>
+            </a>
             ${extra.length ? `<div class="tags">${extra.join('')}</div>` : ''}
           </td>
         </tr>`;

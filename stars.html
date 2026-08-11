@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hamilin Star — Star Detail</title>
+<meta name="description" content="Hamilin Star — every dish, service and hygiene tier awarded, browsable by restaurant.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+
+  <header class="topbar">
+    <div class="wordmark display"><a href="/">STAR</a></div>
+    <nav class="crumbs">
+      <a class="hub-link" href="index.html">Restaurants</a>
+      <a class="hub-link" href="https://hamilin.com">Hamilin</a>
+    </nav>
+  </header>
+
+  <section class="toolbar" aria-label="Filter star awards">
+    <input type="search" id="f-restaurant" class="mono" placeholder="Restaurant or dish name…" aria-label="Restaurant or dish name">
+
+    <select id="f-country" class="mono" aria-label="Country"><option value="">All countries</option></select>
+    <select id="f-city" class="mono" aria-label="City"><option value="">All cities</option></select>
+    <select id="f-category" class="mono" aria-label="Category">
+      <option value="">All categories</option>
+      <option value="Food">Food</option>
+      <option value="Service">Service</option>
+      <option value="Hygiene">Hygiene</option>
+    </select>
+    <select id="f-tier" class="mono" aria-label="Tier">
+      <option value="">Any tier</option>
+      <option value="gold">Gold</option>
+      <option value="silver">Silver</option>
+      <option value="bronze">Bronze</option>
+      <option value="no_star">No star</option>
+      <option value="pending">Pending</option>
+    </select>
+    <select id="f-sort" class="mono" aria-label="Sort by">
+      <option value="restaurant">Sort: Restaurant A–Z</option>
+      <option value="date">Sort: Most recently awarded</option>
+      <option value="tier">Sort: Gold first</option>
+    </select>
+  </section>
+
+  <p id="count" class="mono count"></p>
+
+  <div class="table-wrap" aria-live="polite">
+    <table class="rtable">
+      <thead>
+        <tr>
+          <th class="col-name">Restaurant</th>
+          <th class="col-country">Country</th>
+          <th class="col-city">City</th>
+          <th class="col-locname">Location name</th>
+          <th class="col-name">Name</th>
+          <th class="col-category">Category</th>
+          <th class="col-tier">Tier</th>
+          <th class="col-date">Date Awarded</th>
+        </tr>
+      </thead>
+      <tbody id="list"></tbody>
+    </table>
+  </div>
+  <p id="empty" class="mono empty" hidden>No star awards match those filters.</p>
+
+  <footer>
+    <p class="mono">© 2026 Hamish Lacmane. All rights reserved.</p>
+  </footer>
+
+</div>
+
+<script>
+(async function () {
+  // Service/Hygiene data is still too sparse to be worth showing on the site
+  // (as of 2026-08-11, only a handful of restaurants have anything beyond
+  // 'pending' for either). Flip this back to true once that's built out —
+  // everything downstream already handles all 3 categories, this is the
+  // only gate.
+  const SHOW_NON_FOOD = false;
+
+  const state = { data: [] };
+  const restaurantMeta = new Map(); // name -> { gmaps_url }
+
+  const els = {
+    restaurant: document.getElementById('f-restaurant'),
+    country: document.getElementById('f-country'),
+    city: document.getElementById('f-city'),
+    category: document.getElementById('f-category'),
+    tier: document.getElementById('f-tier'),
+    sort: document.getElementById('f-sort'),
+    list: document.getElementById('list'),
+    count: document.getElementById('count'),
+    empty: document.getElementById('empty'),
+  };
+
+  const TIER_ORDER = { gold: 0, silver: 1, bronze: 2, no_star: 3, pending: 4 };
+  const TIER_LABEL = { gold: 'Gold', silver: 'Silver', bronze: 'Bronze', no_star: 'No star', pending: 'Pending' };
+
+  function populateSelect(el, values) {
+    for (const v of values) {
+      const opt = document.createElement('option');
+      opt.value = v;
+      opt.textContent = v;
+      el.appendChild(opt);
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function render() {
+    const q = els.restaurant.value.trim().toLowerCase();
+    const country = els.country.value;
+    const city = els.city.value;
+    const category = els.category.value;
+    const tier = els.tier.value;
+
+    let rows = state.data.filter(r => {
+      if (country && r.country !== country) return false;
+      if (city && r.city !== city) return false;
+      if (category && r.category !== category) return false;
+      if (tier && r.status !== tier) return false;
+      if (q) {
+        const hay = `${r.restaurant} ${r.name}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+
+    const sort = els.sort.value;
+    rows = rows.slice().sort((a, b) => {
+      if (sort === 'date') {
+        if (a.date_awarded && b.date_awarded) return b.date_awarded.localeCompare(a.date_awarded);
+        if (a.date_awarded) return -1;
+        if (b.date_awarded) return 1;
+        return a.restaurant.localeCompare(b.restaurant);
+      }
+      if (sort === 'tier') {
+        return (TIER_ORDER[a.status] - TIER_ORDER[b.status]) || a.restaurant.localeCompare(b.restaurant);
+      }
+      return a.restaurant.localeCompare(b.restaurant) || a.name.localeCompare(b.name);
+    });
+
+    els.count.textContent = `${rows.length} of ${state.data.length} star awards`;
+    els.empty.hidden = rows.length !== 0;
+
+    els.list.innerHTML = rows.map(r => {
+      const meta = restaurantMeta.get(r.restaurant);
+      const restaurantHtml = meta && meta.gmaps_url
+        ? `<a href="${escapeHtml(meta.gmaps_url)}" target="_blank" rel="noopener">${escapeHtml(r.restaurant)}</a>`
+        : escapeHtml(r.restaurant);
+      const justification = r.justification
+        ? `<p class="mock-caption" style="margin-top:0.35rem;">${escapeHtml(r.justification)}</p>`
+        : '';
+      return `
+        <tr>
+          <td class="col-name"><span class="rname display">${restaurantHtml}</span></td>
+          <td class="col-country mono">${r.country ? escapeHtml(r.country) : ''}</td>
+          <td class="col-city mono">${r.city ? escapeHtml(r.city) : ''}</td>
+          <td class="col-locname mono">${r.location_name ? escapeHtml(r.location_name) : ''}</td>
+          <td class="col-name">
+            ${escapeHtml(r.name)}
+            ${justification}
+          </td>
+          <td class="col-category mono">${escapeHtml(r.category)}</td>
+          <td class="col-tier"><span class="star star-${r.status.replace('_', '')}">${TIER_LABEL[r.status]}</span></td>
+          <td class="col-date mono">${r.date_awarded ? escapeHtml(r.date_awarded) : '—'}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  let data, restaurants;
+  try {
+    const [starsRes, restaurantsRes] = await Promise.all([fetch('data/stars.json'), fetch('data/restaurants.json')]);
+    data = await starsRes.json();
+    restaurants = await restaurantsRes.json();
+  } catch (err) {
+    els.count.textContent = '';
+    els.list.innerHTML = `<p class="mono empty">Couldn't load star data (${escapeHtml(err.message)}).</p>`;
+    return;
+  }
+
+  for (const r of restaurants) restaurantMeta.set(r.name, { gmaps_url: r.gmaps_url });
+
+  if (!SHOW_NON_FOOD) {
+    data = data.filter(r => r.category === 'Food');
+    els.category.style.display = 'none';
+  }
+
+  state.data = data;
+
+  populateSelect(els.country, [...new Set(data.map(r => r.country).filter(Boolean))].sort());
+  populateSelect(els.city, [...new Set(data.map(r => r.city).filter(Boolean))].sort());
+
+  const params = new URLSearchParams(location.search);
+  const restaurantParam = params.get('restaurant');
+  if (restaurantParam) els.restaurant.value = restaurantParam;
+
+  for (const el of [els.restaurant, els.country, els.city, els.category, els.tier, els.sort]) {
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  }
+
+  render();
+})();
+</script>
+
+</body>
+</html>
