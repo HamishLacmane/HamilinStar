@@ -4,11 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is (currently)
 
-A single placeholder "coming soon" page — no framework, no build step. `index.html` + `styles.css` at the repo root, deploys to GitHub Pages with zero configuration.
+A placeholder "coming soon" page (`index.html` + `styles.css`, no framework, no build step, deploys to GitHub Pages with zero configuration) — plus a real data export (`data/restaurants.json`) that the page doesn't consume yet.
 
-## Do not build the real feature yet
+## Data source — decided, lives outside this repo
 
-Hamilin Star is meant to eventually display "some view of filterable export" of food ratings, but **the data source is explicitly undecided** (Airtable? NocoDB? a static file?) — Hamish deferred this decision (2026-08-09), "will be decided later." Do not build the filterable ratings view, pick a data source, or wire up any backend/API integration until Hamish explicitly settles this. A repo shell existing ahead of time is intentional; a half-built feature guessing at the data source is not.
+`hamilin-star-db` (a sibling folder, `C:\Users\Hamish\Documents\Claude_code\hamilin-star-db\`) is a standalone local Postgres database — the source of truth for ratings data, refreshed periodically from Airtable. Full pipeline/schema/rationale documented in that folder's own `CLAUDE.md`. This repo does **not** talk to Postgres directly (it's a static GitHub Pages site, no backend) — instead:
+
+- `data/restaurants.json` here is a **flattened, pre-computed export** — one object per restaurant, star counts (gold/silver/bronze/total for food/service/hygiene) already calculated, cuisine tags and dining options as plain arrays. No client-side joins needed; `fetch()` + `Array.filter()`/`.sort()` is enough.
+- Generated via `hamilin-star-db/export.sql` (run through `psql`, output piped to a file), then copied into this repo by hand. **Not automated** — regenerate and re-copy whenever the underlying data changes.
+- `index.html` does not fetch or render this file yet — the actual filterable UI hasn't been built. Don't assume it's wired up just because the data file exists.
+
+Do not invent a different data source, wire up a live database connection, or build against anything other than this JSON file — the static-export approach was deliberately chosen because this is a plain GitHub Pages site with no server.
 
 ## Colours are not decided
 
