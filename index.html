@@ -50,7 +50,6 @@
           <th class="col-name">Name</th>
           <th class="col-loc">Location</th>
           <th class="col-cuisine">Cuisine</th>
-          <th class="col-dining">Dining</th>
           <th class="col-food">Food</th>
         </tr>
       </thead>
@@ -175,7 +174,6 @@
           </td>
           <td class="col-loc mono">${loc ? escapeHtml(loc) : ''}</td>
           <td class="col-cuisine">${tagList(r.cuisine_tags, 'tag-cuisine')}</td>
-          <td class="col-dining">${tagList(r.dining_options, 'tag-dining')}</td>
           <td class="col-food">
             <div class="stars">${starBadges(r.food)}</div>
             ${extra.length ? `<div class="tags">${extra.join('')}</div>` : ''}
