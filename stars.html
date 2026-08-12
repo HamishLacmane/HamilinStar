@@ -156,21 +156,16 @@
       const restaurantHtml = meta && meta.gmaps_url
         ? `<a href="${escapeHtml(meta.gmaps_url)}" target="_blank" rel="noopener">${escapeHtml(r.restaurant)}</a>`
         : escapeHtml(r.restaurant);
-      const justification = r.justification
-        ? `<p class="mock-caption" style="margin-top:0.35rem;">${escapeHtml(r.justification)}</p>`
-        : '';
+      const tierTitle = r.justification ? ` title="${escapeHtml(r.justification)}"` : '';
       return `
         <tr>
           <td class="col-name"><span class="rname display">${restaurantHtml}</span></td>
           <td class="col-country mono">${r.country ? escapeHtml(r.country) : ''}</td>
           <td class="col-city mono">${r.city ? escapeHtml(r.city) : ''}</td>
           <td class="col-locname mono">${r.location_name ? escapeHtml(r.location_name) : ''}</td>
-          <td class="col-name">
-            ${escapeHtml(r.name)}
-            ${justification}
-          </td>
+          <td class="col-name">${escapeHtml(r.name)}</td>
           <td class="col-category mono">${escapeHtml(r.category)}</td>
-          <td class="col-tier"><span class="star star-${r.status.replace('_', '')}">${TIER_LABEL[r.status]}</span></td>
+          <td class="col-tier"><span class="star star-${r.status.replace('_', '')}"${tierTitle}>${TIER_LABEL[r.status]}</span></td>
           <td class="col-date mono">${r.date_awarded ? escapeHtml(r.date_awarded) : '—'}</td>
         </tr>`;
     }).join('');
