@@ -30,6 +30,7 @@
     <select id="f-category" class="mono" aria-label="Category">
       <option value="">All categories</option>
       <option value="Food">Food</option>
+      <option value="Shake">Shake</option>
       <option value="Service">Service</option>
       <option value="Hygiene">Hygiene</option>
     </select>
@@ -156,21 +157,16 @@
       const restaurantHtml = meta && meta.gmaps_url
         ? `<a href="${escapeHtml(meta.gmaps_url)}" target="_blank" rel="noopener">${escapeHtml(r.restaurant)}</a>`
         : escapeHtml(r.restaurant);
-      const justification = r.justification
-        ? `<p class="mock-caption" style="margin-top:0.35rem;">${escapeHtml(r.justification)}</p>`
-        : '';
+      const tierTitle = r.justification ? ` title="${escapeHtml(r.justification)}"` : '';
       return `
         <tr>
           <td class="col-name"><span class="rname display">${restaurantHtml}</span></td>
           <td class="col-country mono">${r.country ? escapeHtml(r.country) : ''}</td>
           <td class="col-city mono">${r.city ? escapeHtml(r.city) : ''}</td>
           <td class="col-locname mono">${r.location_name ? escapeHtml(r.location_name) : ''}</td>
-          <td class="col-name">
-            ${escapeHtml(r.name)}
-            ${justification}
-          </td>
+          <td class="col-name">${escapeHtml(r.name)}</td>
           <td class="col-category mono">${escapeHtml(r.category)}</td>
-          <td class="col-tier"><span class="star star-${r.status.replace('_', '')}">${TIER_LABEL[r.status]}</span></td>
+          <td class="col-tier"><span class="star star-${r.status.replace('_', '')}"${tierTitle}>${TIER_LABEL[r.status]}</span></td>
           <td class="col-date mono">${r.date_awarded ? escapeHtml(r.date_awarded) : '—'}</td>
         </tr>`;
     }).join('');
@@ -190,7 +186,9 @@
   for (const r of restaurants) restaurantMeta.set(r.name, { gmaps_url: r.gmaps_url });
 
   if (!SHOW_NON_FOOD) {
-    data = data.filter(r => r.category === 'Food');
+    // Filter out Service/Hygiene only — Food-adjacent categories like Shake
+    // still belong on this page, they're just a different tag than plain Food.
+    data = data.filter(r => r.category !== 'Service' && r.category !== 'Hygiene');
     els.category.style.display = 'none';
   }
 
