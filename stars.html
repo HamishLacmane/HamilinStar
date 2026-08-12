@@ -30,6 +30,7 @@
     <select id="f-category" class="mono" aria-label="Category">
       <option value="">All categories</option>
       <option value="Food">Food</option>
+      <option value="Shake">Shake</option>
       <option value="Service">Service</option>
       <option value="Hygiene">Hygiene</option>
     </select>
@@ -185,7 +186,9 @@
   for (const r of restaurants) restaurantMeta.set(r.name, { gmaps_url: r.gmaps_url });
 
   if (!SHOW_NON_FOOD) {
-    data = data.filter(r => r.category === 'Food');
+    // Filter out Service/Hygiene only — Food-adjacent categories like Shake
+    // still belong on this page, they're just a different tag than plain Food.
+    data = data.filter(r => r.category !== 'Service' && r.category !== 'Hygiene');
     els.category.style.display = 'none';
   }
 
