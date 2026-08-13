@@ -13,18 +13,18 @@
   --accent: #8A8A8A; /* neutral grey placeholder — not a chosen brand colour */
   /* tier colours — shared with Hamilin Guide so gold/silver/bronze/no-star
      read as the same colour on both sites (unified 2026-08-13) */
-  --gold-bg: #EF9F27;
-  --gold-tint: #FAEEDA;
-  --gold-ink: #412402;
-  --silver-bg: #9CA3AF;
-  --silver-tint: #EEEEEE;
-  --silver-ink: #292D33;
-  --bronze-bg: #C97C42;
-  --bronze-tint: #F6E3D3;
-  --bronze-ink: #2C1608;
-  --nostar-bg: #8A8A8A;
-  --nostar-tint: #EEEEEE;
-  --nostar-ink: #333333;
+  --gold-bg: #D9BE6C;
+  --gold-tint: #F0DA9A;
+  --gold-ink: #6B4E00;
+  --silver-bg: #C2C2C2;
+  --silver-tint: #DCDCDC;
+  --silver-ink: #45484B;
+  --bronze-bg: #B25E2F;
+  --bronze-tint: #E3B48C;
+  --bronze-ink: #6B3612;
+  --nostar-bg: #D69A9A;
+  --nostar-tint: #E7B8B8;
+  --nostar-ink: #7A1F1F;
 }
 
 * { box-sizing: border-box; }
@@ -122,8 +122,15 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
   border-bottom: 1px solid var(--hairline);
   font-size: 0.95rem;
   color: var(--ink);
-  max-width: 60ch;
 }
+.star-intro p { max-width: 60ch; margin: 0 0 0.9rem; }
+.star-intro p:last-child { margin-bottom: 0; }
+.tier-legend { display: flex; flex-direction: column; gap: 0.4rem; max-width: 42rem; }
+.tier-legend-row { padding: 0.5rem 0.75rem; border-radius: 4px; font-size: 0.88rem; border: 1px solid transparent; }
+.tier-legend-row.gold { background: var(--gold-tint); color: var(--gold-ink); }
+.tier-legend-row.silver { background: var(--silver-tint); color: var(--silver-ink); }
+.tier-legend-row.bronze { background: var(--bronze-tint); color: var(--bronze-ink); }
+.tier-legend-row.nostar { background: transparent; border: 1px solid var(--hairline); color: var(--ink-soft); }
 
 /* ---- filter toolbar ---- */
 .toolbar {
@@ -197,6 +204,9 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
 .col-food { min-width: 12rem; }
 .col-category, .col-tier { min-width: 6rem; }
 .col-date { min-width: 7rem; color: var(--ink-soft); font-size: 0.78rem; }
+.col-gmaps { min-width: 5.5rem; }
+.gmaps-link { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--hairline); font-size: 0.78rem; }
+.gmaps-link:hover, .gmaps-link:focus-visible { border-color: var(--ink); }
 
 .stars-link { display: block; text-decoration: none; border-radius: 3px; margin: -0.2rem -0.3rem; padding: 0.2rem 0.3rem; }
 .stars-link:hover, .stars-link:focus-visible { background: rgba(0,0,0,0.06); outline: none; }
