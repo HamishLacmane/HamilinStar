@@ -37,8 +37,13 @@
   </header>
 
   <section class="star-intro">
-    <!-- TODO(Hamish): intro copy — a couple of sentences about this site -->
-    placeholder text
+    <p>This is a simple table for exploring my restaurant ratings (where completed). Hamilin Stars can only be awarded by Hamilin (aka Hamish).</p>
+    <div class="tier-legend">
+      <div class="tier-legend-row gold"><strong>Gold</strong> — Amazing! Must Try!</div>
+      <div class="tier-legend-row silver"><strong>Silver</strong> — Pretty Good! Worth Trying!</div>
+      <div class="tier-legend-row bronze"><strong>Bronze</strong> — Just About Acceptable!</div>
+      <div class="tier-legend-row nostar"><strong>No Star</strong> — Don't get this. This dish should not be served again.</div>
+    </div>
   </section>
 
   <section class="toolbar" aria-label="Filter restaurants">
@@ -77,6 +82,7 @@
           <th class="col-locname">Location name</th>
           <th class="col-cuisine">Cuisine</th>
           <th class="col-food">Food</th>
+          <th class="col-gmaps">GMaps</th>
         </tr>
       </thead>
       <tbody id="list"></tbody>
@@ -184,9 +190,6 @@
     els.empty.hidden = rows.length !== 0;
 
     els.list.innerHTML = rows.map(r => {
-      const nameHtml = r.gmaps_url
-        ? `<a href="${escapeHtml(r.gmaps_url)}" target="_blank" rel="noopener">${escapeHtml(r.name)}</a>`
-        : escapeHtml(r.name);
       const status = r.restaurant_status ? `<span class="rstatus">${escapeHtml(r.restaurant_status)}</span>` : '';
       const extra = [];
       if (SHOW_NON_FOOD) {
@@ -197,7 +200,7 @@
       return `
         <tr>
           <td class="col-name">
-            <span class="rname display">${nameHtml}</span>
+            <span class="rname display"><a href="${starsHref}" title="View star detail for ${escapeHtml(r.name)}">${escapeHtml(r.name)}</a></span>
             ${status}
           </td>
           <td class="col-country mono">${r.country ? escapeHtml(r.country) : ''}</td>
@@ -210,6 +213,7 @@
             </a>
             ${extra.length ? `<div class="tags">${extra.join('')}</div>` : ''}
           </td>
+          <td class="col-gmaps mono">${r.gmaps_url ? `<a class="gmaps-link" href="${escapeHtml(r.gmaps_url)}" target="_blank" rel="noopener">GMaps ↗</a>` : ''}</td>
         </tr>`;
     }).join('');
   }
