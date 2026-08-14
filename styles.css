@@ -25,6 +25,13 @@
   --nostar-bg: #D69A9A;
   --nostar-tint: #E7B8B8;
   --nostar-ink: #7A1F1F;
+  /* Guide category colours — shared with Hamilin Guide (unified 2026-08-14),
+     same values as Guide's --cat-* tokens. --cat-desserts is a first pass,
+     not yet confirmed with Hamish. */
+  --cat-top_picks: #BA0B2F;
+  --cat-gelato_guru: #6B8E5A;
+  --cat-gone_but_not_forgotten: #9B9B93;
+  --cat-desserts: #C2708A;
 }
 
 * { box-sizing: border-box; }
@@ -208,6 +215,21 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
 .gmaps-link { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--hairline); font-size: 0.78rem; }
 .gmaps-link:hover, .gmaps-link:focus-visible { border-color: var(--ink); }
 
+.col-guide-cats { min-width: 9rem; }
+.guide-cats { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.guide-cat-badge {
+  font-family: Consolas, monospace;
+  font-size: 0.65rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  white-space: nowrap;
+  color: var(--paper);
+}
+.guide-cat-badge.cat-top_picks { background: var(--cat-top_picks); }
+.guide-cat-badge.cat-gelato_guru { background: var(--cat-gelato_guru); }
+.guide-cat-badge.cat-gone_but_not_forgotten { background: var(--cat-gone_but_not_forgotten); color: var(--ink); }
+.guide-cat-badge.cat-desserts { background: var(--cat-desserts); }
+
 .stars-link { display: block; text-decoration: none; border-radius: 3px; margin: -0.2rem -0.3rem; padding: 0.2rem 0.3rem; }
 .stars-link:hover, .stars-link:focus-visible { background: rgba(0,0,0,0.06); outline: none; }
 
@@ -234,7 +256,7 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
 .star-gold   { background: var(--gold-tint); color: var(--gold-ink); border-color: var(--gold-bg); }
 .star-silver { background: var(--silver-tint); color: var(--silver-ink); border-color: var(--silver-bg); }
 .star-bronze { background: var(--bronze-tint); color: var(--bronze-ink); border-color: var(--bronze-bg); }
-.star-nostar { background: var(--nostar-tint); color: var(--nostar-ink); border-color: var(--nostar-bg); }
+.star-nostar { background: transparent; color: var(--ink-soft); border-color: var(--hairline); }
 .star-pending{ background: transparent; color: var(--ink-soft); border-color: var(--hairline); font-weight: 400; }
 .star-none   { background: transparent; color: var(--ink-soft); border-color: var(--hairline); font-weight: 400; font-style: italic; }
 

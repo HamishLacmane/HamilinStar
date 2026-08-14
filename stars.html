@@ -77,6 +77,7 @@
           <th class="col-category">Category</th>
           <th class="col-tier">Tier</th>
           <th class="col-date">Date Awarded</th>
+          <th class="col-guide-cats">Guide</th>
         </tr>
       </thead>
       <tbody id="list"></tbody>
@@ -100,7 +101,23 @@
   const SHOW_NON_FOOD = false;
 
   const state = { data: [] };
-  const restaurantMeta = new Map(); // name -> { gmaps_url }
+  const restaurantMeta = new Map(); // name -> { gmaps_url, guide_categories }
+
+  // Same JS-key -> label mapping as Hamilin Guide's CATEGORY_LABEL, plus
+  // "desserts" (Guide has no rendered section for that one yet, but Star
+  // isn't gated by sections — show every category a restaurant carries).
+  const GUIDE_CATEGORY_LABEL = {
+    top_picks: 'Top Picks',
+    gelato_guru: "The Gelato Guru's Faves",
+    gone_but_not_forgotten: 'Gone But Not Forgotten',
+    desserts: 'Desserts'
+  };
+  function guideCatBadges(categories) {
+    if (!categories || !categories.length) return '';
+    return `<div class="guide-cats">${categories.map(c =>
+      `<span class="guide-cat-badge cat-${c}">${escapeHtml(GUIDE_CATEGORY_LABEL[c] || c)}</span>`
+    ).join('')}</div>`;
+  }
 
   const els = {
     restaurant: document.getElementById('f-restaurant'),
@@ -182,6 +199,7 @@
           <td class="col-category mono">${escapeHtml(r.category)}</td>
           <td class="col-tier"><span class="star star-${r.status.replace('_', '')}"${tierTitle}>${TIER_LABEL[r.status]}</span></td>
           <td class="col-date mono">${r.date_awarded ? escapeHtml(r.date_awarded) : '—'}</td>
+          <td class="col-guide-cats">${guideCatBadges(meta ? meta.guide_categories : null)}</td>
         </tr>`;
     }).join('');
   }
@@ -197,7 +215,7 @@
     return;
   }
 
-  for (const r of restaurants) restaurantMeta.set(r.name, { gmaps_url: r.gmaps_url });
+  for (const r of restaurants) restaurantMeta.set(r.name, { gmaps_url: r.gmaps_url, guide_categories: r.guide_categories });
 
   if (!SHOW_NON_FOOD) {
     // Filter out Service/Hygiene only — Food-adjacent categories like Shake
