@@ -63,9 +63,9 @@
       <option value="unreviewed">Unreviewed</option>
     </select>
     <select id="f-sort" class="mono" aria-label="Sort by">
-      <option value="stars" selected>Sort: Most total stars</option>
+      <option value="stars">Sort: Most total stars</option>
       <option value="name">Sort: Name A–Z</option>
-      <option value="gold">Sort: Most gold</option>
+      <option value="gold" selected>Sort: Most gold</option>
       <option value="reviews">Sort: Most reviews</option>
     </select>
   </section>
@@ -83,6 +83,7 @@
           <th class="col-cuisine">Cuisine</th>
           <th class="col-food">Food</th>
           <th class="col-gmaps">GMaps</th>
+          <th class="col-guide-cats">Guide</th>
         </tr>
       </thead>
       <tbody id="list"></tbody>
@@ -101,6 +102,22 @@
   // Kept in sync with stars.html's SHOW_NON_FOOD flag — service/hygiene
   // data is too sparse to show yet. Flip both back together.
   const SHOW_NON_FOOD = false;
+
+  // Same JS-key -> label mapping as Hamilin Guide's CATEGORY_LABEL, plus
+  // "desserts" (Guide has no rendered section for that one yet, but Star
+  // isn't gated by sections — show every category a restaurant carries).
+  const GUIDE_CATEGORY_LABEL = {
+    top_picks: 'Top Picks',
+    gelato_guru: "The Gelato Guru's Faves",
+    gone_but_not_forgotten: 'Gone But Not Forgotten',
+    desserts: 'Desserts'
+  };
+  function guideCatBadges(categories) {
+    if (!categories || !categories.length) return '';
+    return `<div class="guide-cats">${categories.map(c =>
+      `<span class="guide-cat-badge cat-${c}">${escapeHtml(GUIDE_CATEGORY_LABEL[c] || c)}</span>`
+    ).join('')}</div>`;
+  }
 
   const state = { data: [], filtered: [] };
 
@@ -214,6 +231,7 @@
             ${extra.length ? `<div class="tags">${extra.join('')}</div>` : ''}
           </td>
           <td class="col-gmaps mono">${r.gmaps_url ? `<a class="gmaps-link" href="${escapeHtml(r.gmaps_url)}" target="_blank" rel="noopener">GMaps ↗</a>` : ''}</td>
+          <td class="col-guide-cats">${guideCatBadges(r.guide_categories)}</td>
         </tr>`;
     }).join('');
   }
