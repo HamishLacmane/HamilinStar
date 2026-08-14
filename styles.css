@@ -208,21 +208,24 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
 
 .col-country, .col-city, .col-locname { color: var(--ink-soft); font-size: 0.78rem; min-width: 7rem; }
 .col-cuisine { min-width: 11rem; }
-.col-food { min-width: 12rem; }
+.col-food { min-width: 6rem; }
 .col-category, .col-tier { min-width: 6rem; }
 .col-date { min-width: 7rem; color: var(--ink-soft); font-size: 0.78rem; }
 .col-gmaps { min-width: 5.5rem; }
 .gmaps-link { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--hairline); font-size: 0.78rem; }
 .gmaps-link:hover, .gmaps-link:focus-visible { border-color: var(--ink); }
+.gmaps-link-inline { display: block; margin-top: 0.2rem; font-size: 0.7rem; color: var(--ink-soft); border-bottom-color: transparent; }
+.gmaps-link-inline:hover, .gmaps-link-inline:focus-visible { color: var(--ink); border-color: var(--ink); }
 
-.col-guide-cats { min-width: 9rem; }
-.guide-cats { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.col-guide-cats { min-width: 7.5rem; }
+.guide-cats { display: flex; flex-direction: column; align-items: stretch; gap: 0.3rem; }
 .guide-cat-badge {
   font-family: Consolas, monospace;
   font-size: 0.65rem;
   padding: 0.15rem 0.45rem;
   border-radius: 3px;
-  white-space: nowrap;
+  max-width: 7rem;
+  text-align: center;
   color: var(--paper);
 }
 .guide-cat-badge.cat-top_picks { background: var(--cat-top_picks); }
@@ -243,7 +246,7 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
   margin-top: 0.2rem;
 }
 
-.stars { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.stars { display: flex; flex-direction: column; align-items: stretch; gap: 0.35rem; }
 .star {
   font-family: Consolas, monospace;
   font-weight: 600;
@@ -251,6 +254,7 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
   border-radius: 3px;
   padding: 0.22rem 0.55rem;
   border: 1px solid transparent;
+  text-align: center;
   white-space: nowrap;
 }
 .star-gold   { background: var(--gold-tint); color: var(--gold-ink); border-color: var(--gold-bg); }

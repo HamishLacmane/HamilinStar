@@ -62,6 +62,13 @@
       <option value="pending">Pending review</option>
       <option value="unreviewed">Unreviewed</option>
     </select>
+    <select id="f-guide" class="mono" aria-label="Guide category">
+      <option value="">Any Guide category</option>
+      <option value="top_picks">Top Picks</option>
+      <option value="gelato_guru">The Gelato Guru's Faves</option>
+      <option value="gone_but_not_forgotten">Gone But Not Forgotten</option>
+      <option value="desserts">Desserts</option>
+    </select>
     <select id="f-sort" class="mono" aria-label="Sort by">
       <option value="stars">Sort: Most total stars</option>
       <option value="name">Sort: Name A–Z</option>
@@ -81,7 +88,7 @@
           <th class="col-city">City</th>
           <th class="col-locname">Location name</th>
           <th class="col-cuisine">Cuisine</th>
-          <th class="col-food">Food</th>
+          <th class="col-food">Food Stars</th>
           <th class="col-gmaps">GMaps</th>
           <th class="col-guide-cats">Guide</th>
         </tr>
@@ -128,6 +135,7 @@
     cuisine: document.getElementById('f-cuisine'),
     dining: document.getElementById('f-dining'),
     food: document.getElementById('f-food'),
+    guide: document.getElementById('f-guide'),
     sort: document.getElementById('f-sort'),
     list: document.getElementById('list'),
     count: document.getElementById('count'),
@@ -176,6 +184,7 @@
     const cuisine = els.cuisine.value;
     const dining = els.dining.value;
     const food = els.food.value;
+    const guide = els.guide.value;
 
     let rows = state.data.filter(r => {
       if (country && r.country !== country) return false;
@@ -183,6 +192,7 @@
       if (cuisine && !r.cuisine_tags.includes(cuisine)) return false;
       if (dining && !r.dining_options.includes(dining)) return false;
       if (!foodTierMatch(r.food, food)) return false;
+      if (guide && !(r.guide_categories || []).includes(guide)) return false;
       if (q) {
         const hay = [r.name, r.location_name, r.city, r.country].filter(Boolean).join(' ').toLowerCase();
         if (!hay.includes(q)) return false;
@@ -219,6 +229,7 @@
           <td class="col-name">
             <span class="rname display"><a href="${starsHref}" title="View star detail for ${escapeHtml(r.name)}">${escapeHtml(r.name)}</a></span>
             ${status}
+            ${r.gmaps_url ? `<a class="gmaps-link gmaps-link-inline mono" href="${escapeHtml(r.gmaps_url)}" target="_blank" rel="noopener">GMaps ↗</a>` : ''}
           </td>
           <td class="col-country mono">${r.country ? escapeHtml(r.country) : ''}</td>
           <td class="col-city mono">${r.city ? escapeHtml(r.city) : ''}</td>
@@ -253,7 +264,7 @@
   populateSelect(els.cuisine, [...new Set(data.flatMap(r => r.cuisine_tags))].sort());
   populateSelect(els.dining, [...new Set(data.flatMap(r => r.dining_options))].sort());
 
-  for (const el of [els.search, els.country, els.city, els.cuisine, els.dining, els.food, els.sort]) {
+  for (const el of [els.search, els.country, els.city, els.cuisine, els.dining, els.food, els.guide, els.sort]) {
     el.addEventListener('input', render);
     el.addEventListener('change', render);
   }
