@@ -135,7 +135,6 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
    still just a neutral grey placeholder, not a real brand colour, so
    this deliberately doesn't borrow Guide's crimson). Added 2026-08-19,
    under the tier legend per Hamish. */
-.support-blurb { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--ink-soft); }
 .support-link {
   font-family: Consolas, monospace;
   font-size: 0.75rem;
@@ -153,6 +152,14 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
 }
 .star-intro p { max-width: 60ch; margin: 0 0 0.9rem; }
 .star-intro p:last-child { margin-bottom: 0; }
+.star-intro .tier-legend-label {
+  font-family: Consolas, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 0.9rem 0 0.4rem;
+}
 /* Matches Hamilin Guide's category-def pattern (about/index.html there):
    the tier name sits in a colour-filled pill, the description is plain
    text alongside it, not inside the colouring. Changed from a fully
