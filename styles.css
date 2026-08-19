@@ -26,12 +26,19 @@
   --nostar-tint: #E7B8B8;
   --nostar-ink: #7A1F1F;
   /* Guide category colours — shared with Hamilin Guide (unified 2026-08-14),
-     same values as Guide's --cat-* tokens. --cat-desserts is a first pass,
-     not yet confirmed with Hamish. */
+     same values as Guide's --cat-* tokens, kept in sync by hand (no shared
+     file between the two repos — check Guide's styles.css whenever this
+     needs updating). --cat-desserts is a first pass, not yet confirmed
+     with Hamish. --cat-gelato_guru updated 2026-08-19 to match Guide's
+     confirmed cyan (was pistachio green, then went through blue on Guide's
+     side too — this file had drifted out of sync until now). */
   --cat-top_picks: #BA0B2F;
-  --cat-gelato_guru: #6B8E5A;
+  --cat-gelato_guru: #03cafc;
   --cat-gone_but_not_forgotten: #9B9B93;
   --cat-desserts: #C2708A;
+  --cat-amazing_value: #3F7D4B;
+  /* Overrated has no colour token, same as Guide — its badge reuses the
+     transparent/hairline/ink-soft no-star treatment instead. */
 }
 
 * { box-sizing: border-box; }
@@ -232,6 +239,8 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
 .guide-cat-badge.cat-gelato_guru { background: var(--cat-gelato_guru); }
 .guide-cat-badge.cat-gone_but_not_forgotten { background: var(--cat-gone_but_not_forgotten); color: var(--ink); }
 .guide-cat-badge.cat-desserts { background: var(--cat-desserts); }
+.guide-cat-badge.cat-amazing_value { background: var(--cat-amazing_value); }
+.guide-cat-badge.cat-overrated { background: transparent; border: 1px solid var(--hairline); color: var(--ink-soft); }
 
 .stars-link { display: block; text-decoration: none; border-radius: 3px; margin: -0.2rem -0.3rem; padding: 0.2rem 0.3rem; }
 .stars-link:hover, .stars-link:focus-visible { background: rgba(0,0,0,0.06); outline: none; }
