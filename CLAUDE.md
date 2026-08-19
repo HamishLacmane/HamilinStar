@@ -19,6 +19,12 @@ A live filterable restaurant browser (`index.html` + `styles.css`, no framework,
 
 Do not invent a different data source, wire up a live database connection, or build against anything other than this JSON file — the static-export approach was deliberately chosen because this is a plain GitHub Pages site with no server.
 
+## Homepage tier legend and support link — added/redesigned 2026-08-19
+
+The `.star-intro` block's tier legend (`.tier-legend`/`.tier-legend-row` in `index.html`/`styles.css`) was restructured to match Hamilin Guide's `category-def` pattern (see that repo's About page): the tier name sits in a small colour-filled `.tier-badge` pill, the description text is plain and sits outside the colouring, rather than the whole row being tinted. Per Hamish, spotting the inconsistency between the two sites' styles.
+
+Right under the legend, a "Buy me a gelato ↗" link (`.support-link`, `https://www.paypal.com/paypalme/hamishlacmane/5`) — same monospace/small/trailing-↗ "outbound action" pattern as `.nav-guide-link`, but using `--ink-soft` rather than `--accent`, since Star's accent colour is still just a neutral grey placeholder (see "Colours are not decided" below), not a real brand choice worth tying a support link to. HamilinGuide has the same link/URL with its own (accent-red) styling — see that repo's `CLAUDE.md`.
+
 ## Colours are not decided
 
 `styles.css` uses a neutral grey (`--accent: #8A8A8A`) as an explicit placeholder, not a real brand choice. Don't treat it as the final palette or extend it as if it were — Hamish hasn't picked Star's colours yet. The table's dark sticky header reuses the existing `--ink` token (not a new colour), and the star-tier badge colours are conventional medal colours (informational, not brand) — both are fine to keep despite the palette still being undecided; don't read either as a resolved brand choice.

@@ -130,6 +130,20 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
 }
 .nav-guide-link:hover, .nav-guide-link:focus-visible { color: var(--ink); text-decoration: underline; }
 
+/* "Buy me a gelato" support link — same outbound-action treatment as
+   .nav-guide-link (monospace, small, ink-soft — Star's own accent is
+   still just a neutral grey placeholder, not a real brand colour, so
+   this deliberately doesn't borrow Guide's crimson). Added 2026-08-19,
+   under the tier legend per Hamish. */
+.support-blurb { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--ink-soft); }
+.support-link {
+  font-family: Consolas, monospace;
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.support-link:hover, .support-link:focus-visible { color: var(--ink); text-decoration: underline; }
+
 /* ---- intro text box (matches Guide's .guide-intro) ---- */
 .star-intro {
   padding: 1.1rem 0;
