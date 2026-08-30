@@ -23,7 +23,7 @@ Do not invent a different data source, wire up a live database connection, or bu
 
 The `.star-intro` block's tier legend (`.tier-legend`/`.tier-legend-row` in `index.html`/`styles.css`) was restructured to match Hamilin Guide's `category-def` pattern (see that repo's About page): the tier name sits in a small colour-filled `.tier-badge` pill, the description text is plain and sits outside the colouring, rather than the whole row being tinted. Per Hamish, spotting the inconsistency between the two sites' styles.
 
-Right under the legend, a "Buy me a gelato ↗" link (`.support-link`, `https://www.paypal.com/paypalme/hamishlacmane/5`) — same monospace/small/trailing-↗ "outbound action" pattern as `.nav-guide-link`, but using `--ink-soft` rather than `--accent`, since Star's accent colour is still just a neutral grey placeholder (see "Colours are not decided" below), not a real brand choice worth tying a support link to. HamilinGuide has the same link/URL with its own (accent-red) styling — see that repo's `CLAUDE.md`.
+Right under the legend, a "Buy me a gelato ↗" link (`.support-link`, `https://buymeacoffee.com/hamilingui6` — was `https://www.paypal.com/paypalme/hamishlacmane/5` until switched 2026-08-27) — same monospace/small/trailing-↗ "outbound action" pattern as `.nav-guide-link`, but using `--ink-soft` rather than `--accent`, since Star's accent colour is still just a neutral grey placeholder (see "Colours are not decided" below), not a real brand choice worth tying a support link to. HamilinGuide has the same link/URL with its own (accent-red) styling — see that repo's `CLAUDE.md`.
 
 ## Colours are not decided
 
