@@ -198,7 +198,89 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
   padding: 0.5rem 0.65rem;
 }
 .toolbar input[type="search"] { flex: 1 1 14rem; min-width: 12rem; }
-.toolbar select { flex: 0 1 auto; }
+/* Same chevron asset/colour/size as .msel-btn-arrow, positioned to match
+   its gap+padding rhythm — the plain OS-native arrow looked visibly
+   chunkier/differently-spaced next to the custom buttons (2026-08-30,
+   confirmed via a real side-by-side screenshot, not just eyeballing). */
+.toolbar select {
+  flex: 0 1 auto;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23666666' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  background-size: 10px 6px;
+  padding-right: 1.75rem;
+}
+
+/* ---- multi-select dropdown (Country/City/Cuisine/Food status/Guide
+   category — added 2026-08-30). Search box + checkbox list in a floating
+   panel, same visual language as the plain <select>s beside it. ---- */
+.msel { position: relative; flex: 0 1 auto; }
+.msel-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: Consolas, "Cascadia Code", "SF Mono", ui-monospace, monospace;
+  font-size: 0.8rem;
+  color: var(--ink);
+  background: var(--paper-raised);
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
+  padding: 0.5rem 0.65rem;
+  height: 2.3rem;
+  cursor: pointer;
+  max-width: 14rem;
+}
+.msel-btn-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Plain outlined chevron (not a solid triangle) — closer to the native
+   <select> arrow's look than a filled glyph, so it doesn't read as an
+   unrelated shape sitting next to Sort's real native arrow (2026-08-30). */
+.msel-btn-arrow {
+  flex-shrink: 0;
+  width: 10px;
+  height: 6px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23666666' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 10px 6px;
+}
+.msel-btn.msel-active { border-color: var(--ink); color: var(--ink); font-weight: 600; }
+.msel-panel {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  z-index: 20;
+  min-width: 14rem;
+  max-width: 20rem;
+  background: var(--paper-raised);
+  border: 1px solid var(--hairline);
+  border-radius: 4px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  padding: 0.5rem;
+}
+.msel-search {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: Consolas, monospace;
+  font-size: 0.78rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--hairline);
+  border-radius: 3px;
+  margin-bottom: 0.4rem;
+}
+.msel-options { max-height: 14rem; overflow-y: auto; display: flex; flex-direction: column; }
+.msel-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  padding: 0.3rem 0.3rem;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.msel-option:hover { background: var(--paper); }
+.msel-option input { margin: 0; flex-shrink: 0; }
+.msel-empty { font-size: 0.78rem; color: var(--ink-soft); margin: 0.3rem; }
 
 .count { color: var(--ink-soft); font-size: 0.78rem; margin: 1rem 0 0.75rem; }
 .empty { color: var(--ink-soft); padding: 2rem 0; }
