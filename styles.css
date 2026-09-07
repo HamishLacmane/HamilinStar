@@ -335,11 +335,26 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
 .col-food { min-width: 6rem; }
 .col-category, .col-tier { min-width: 6rem; }
 .col-date { min-width: 7rem; color: var(--ink-soft); font-size: 0.78rem; }
-.col-gmaps { min-width: 5.5rem; }
+/* Hidden for now, per Hamish 2026-08-30 — the inline map-pin icon under
+   the restaurant name covers this already. Markup/data still there,
+   just not rendered; remove this rule to bring the column back. */
+.col-gmaps { display: none; }
 .gmaps-link { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--hairline); font-size: 0.78rem; }
 .gmaps-link:hover, .gmaps-link:focus-visible { border-color: var(--ink); }
-.gmaps-link-inline { display: block; margin-top: 0.2rem; font-size: 0.7rem; color: var(--ink-soft); border-bottom-color: transparent; }
-.gmaps-link-inline:hover, .gmaps-link-inline:focus-visible { color: var(--ink); border-color: var(--ink); }
+
+/* map-pin-share icon before the country text — settled here 2026-08-30
+   after trying it under the restaurant name first (looked worse there,
+   removed). */
+.gmaps-link-country {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: -0.15em;
+  margin-right: 0.35rem;
+  color: var(--ink-soft);
+  border-bottom-color: transparent;
+}
+.gmaps-link-country:hover, .gmaps-link-country:focus-visible { color: var(--ink); border-color: transparent; }
+.gmaps-link-country svg { display: block; width: 1em; height: 1em; }
 
 .col-guide-cats { min-width: 7.5rem; }
 .guide-cats { display: flex; flex-direction: column; align-items: stretch; gap: 0.3rem; }
