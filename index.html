@@ -261,6 +261,13 @@
     return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
+  // Tabler Icons "map-pin-share" (tabler.io/icons, MIT licensed), outline
+  // set, inlined directly rather than pulling in an external font/CDN —
+  // same zero-dependency technique already used for the favicon. Replaces
+  // the "GMaps ↗" text link under the restaurant name (2026-08-30);
+  // the dedicated GMaps table column keeps its text link, unchanged.
+  const MAP_PIN_SHARE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" /><path d="M12.02 21.485a1.996 1.996 0 0 1 -1.433 -.585l-4.244 -4.243a8 8 0 1 1 13.403 -3.651" /><path d="M16 22l5 -5" /><path d="M21 21.5v-4.5h-4.5" /></svg>`;
+
   function render() {
     const q = els.search.value.trim().toLowerCase();
     const countries = els.country.getSelected();
@@ -313,9 +320,8 @@
           <td class="col-name">
             <span class="rname display"><a href="${starsHref}" title="View star detail for ${escapeHtml(r.name)}">${escapeHtml(r.name)}</a></span>
             ${status}
-            ${r.gmaps_url ? `<a class="gmaps-link gmaps-link-inline mono" href="${escapeHtml(r.gmaps_url)}" target="_blank" rel="noopener">GMaps ↗</a>` : ''}
           </td>
-          <td class="col-country mono">${r.country ? escapeHtml(r.country) : ''}</td>
+          <td class="col-country mono">${r.gmaps_url ? `<a class="gmaps-link gmaps-link-country" href="${escapeHtml(r.gmaps_url)}" target="_blank" rel="noopener" title="View on Google Maps" aria-label="View on Google Maps">${MAP_PIN_SHARE_ICON}</a>` : ''}${r.country ? escapeHtml(r.country) : ''}</td>
           <td class="col-city mono">${r.city ? escapeHtml(r.city) : ''}</td>
           <td class="col-locname mono">${r.location_name ? escapeHtml(r.location_name) : ''}</td>
           <td class="col-cuisine">${tagList(r.cuisine_tags, 'tag-cuisine')}</td>
