@@ -51,26 +51,43 @@
   <section class="toolbar" aria-label="Filter restaurants">
     <input type="search" id="f-search" class="mono" placeholder="Search name, area, city…" aria-label="Search">
 
-    <select id="f-country" class="mono" aria-label="Country"><option value="">All countries</option></select>
-    <select id="f-city" class="mono" aria-label="City"><option value="">All cities</option></select>
-    <select id="f-cuisine" class="mono" aria-label="Cuisine"><option value="">All cuisines</option></select>
-    <select id="f-dining" class="mono" aria-label="Dining option"><option value="">Any dining option</option></select>
-    <select id="f-food" class="mono" aria-label="Food status">
-      <option value="">Any food status</option>
-      <option value="gold">Gold</option>
-      <option value="silver">Silver</option>
-      <option value="bronze">Bronze</option>
-      <option value="no_star">Assessed, no star</option>
-      <option value="pending">Pending review</option>
-      <option value="unreviewed">Unreviewed</option>
-    </select>
-    <select id="f-guide" class="mono" aria-label="Guide category">
-      <option value="">Any Guide category</option>
-      <option value="top_picks">Top Picks</option>
-      <option value="gelato_guru">The Gelato Guru's Faves</option>
-      <option value="gone_but_not_forgotten">Gone But Not Forgotten</option>
-      <option value="desserts">Desserts</option>
-    </select>
+    <div class="msel" id="msel-country">
+      <button type="button" class="msel-btn mono" aria-haspopup="true" aria-expanded="false"><span class="msel-btn-label">All countries</span><span class="msel-btn-arrow"></span></button>
+      <div class="msel-panel" hidden>
+        <input type="text" class="msel-search mono" placeholder="Search…" aria-label="Search countries">
+        <div class="msel-options"></div>
+      </div>
+    </div>
+    <div class="msel" id="msel-city">
+      <button type="button" class="msel-btn mono" aria-haspopup="true" aria-expanded="false"><span class="msel-btn-label">All cities</span><span class="msel-btn-arrow"></span></button>
+      <div class="msel-panel" hidden>
+        <input type="text" class="msel-search mono" placeholder="Search…" aria-label="Search cities">
+        <div class="msel-options"></div>
+      </div>
+    </div>
+    <div class="msel" id="msel-cuisine">
+      <button type="button" class="msel-btn mono" aria-haspopup="true" aria-expanded="false"><span class="msel-btn-label">All cuisines</span><span class="msel-btn-arrow"></span></button>
+      <div class="msel-panel" hidden>
+        <input type="text" class="msel-search mono" placeholder="Search…" aria-label="Search cuisines">
+        <div class="msel-options"></div>
+      </div>
+    </div>
+    <!-- Hidden for now, per Hamish 2026-08-30 — filter logic/data still
+         fully wired underneath, just not shown. Remove `hidden` to bring
+         it back, no other changes needed. -->
+    <select id="f-dining" class="mono" aria-label="Dining option" hidden><option value="">Any dining option</option></select>
+    <div class="msel" id="msel-food">
+      <button type="button" class="msel-btn mono" aria-haspopup="true" aria-expanded="false"><span class="msel-btn-label">Any food status</span><span class="msel-btn-arrow"></span></button>
+      <div class="msel-panel" hidden>
+        <div class="msel-options"></div>
+      </div>
+    </div>
+    <div class="msel" id="msel-guide">
+      <button type="button" class="msel-btn mono" aria-haspopup="true" aria-expanded="false"><span class="msel-btn-label">Any Guide category</span><span class="msel-btn-arrow"></span></button>
+      <div class="msel-panel" hidden>
+        <div class="msel-options"></div>
+      </div>
+    </div>
     <select id="f-sort" class="mono" aria-label="Sort by">
       <option value="stars">Sort: Most total stars</option>
       <option value="name">Sort: Name A–Z</option>
@@ -132,14 +149,77 @@
 
   const state = { data: [], filtered: [] };
 
+  // ---- Multi-select dropdown widget (search box + checkbox list) ----
+  // Replaces plain <select>s for Country/City/Cuisine/Food status/Guide
+  // category (2026-08-30, requested by Hamish) — a restaurant can now be
+  // filtered against several values in one field at once (OR'd together
+  // within that field, AND'd against the other fields, same convention
+  // every faceted filter here already uses). Dining option was NOT part
+  // of the request, deliberately left as a plain single-select.
+  const MULTISELECT_REGISTRY = [];
+  function createMultiSelect(root, { options, allLabel, search = true, onChange }) {
+    const btn = root.querySelector('.msel-btn');
+    const panel = root.querySelector('.msel-panel');
+    const btnLabel = root.querySelector('.msel-btn-label');
+    const searchEl = root.querySelector('.msel-search');
+    const optionsEl = root.querySelector('.msel-options');
+    let allOptions = options; // [{value,label}]
+    const selected = new Set();
+
+    function renderOptions(filterText) {
+      const q = (filterText || '').toLowerCase();
+      const shown = q ? allOptions.filter(o => o.label.toLowerCase().includes(q)) : allOptions;
+      optionsEl.innerHTML = shown.length ? shown.map(o => `
+        <label class="msel-option">
+          <input type="checkbox" value="${escapeHtml(o.value)}" ${selected.has(o.value) ? 'checked' : ''}>
+          <span>${escapeHtml(o.label)}</span>
+        </label>`).join('') : `<p class="msel-empty">No matches</p>`;
+    }
+
+    function updateLabel() {
+      if (selected.size === 0) btnLabel.textContent = allLabel;
+      else if (selected.size === 1) btnLabel.textContent = allOptions.find(o => o.value === [...selected][0])?.label || [...selected][0];
+      else btnLabel.textContent = `${selected.size} selected`;
+      btn.classList.toggle('msel-active', selected.size > 0);
+    }
+
+    function close() {
+      panel.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    }
+    function open() {
+      MULTISELECT_REGISTRY.forEach(m => { if (m !== api) m.close(); });
+      panel.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+      if (searchEl) { searchEl.value = ''; searchEl.focus(); }
+      renderOptions('');
+    }
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      panel.hidden ? open() : close();
+    });
+    if (searchEl) searchEl.addEventListener('input', () => renderOptions(searchEl.value));
+    optionsEl.addEventListener('change', (e) => {
+      if (!e.target.matches('input[type="checkbox"]')) return;
+      const v = e.target.value;
+      if (e.target.checked) selected.add(v); else selected.delete(v);
+      updateLabel();
+      onChange([...selected]);
+    });
+    document.addEventListener('click', (e) => { if (!root.contains(e.target)) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+
+    updateLabel();
+    renderOptions('');
+    const api = { getSelected: () => [...selected], close };
+    MULTISELECT_REGISTRY.push(api);
+    return api;
+  }
+
   const els = {
     search: document.getElementById('f-search'),
-    country: document.getElementById('f-country'),
-    city: document.getElementById('f-city'),
-    cuisine: document.getElementById('f-cuisine'),
     dining: document.getElementById('f-dining'),
-    food: document.getElementById('f-food'),
-    guide: document.getElementById('f-guide'),
     sort: document.getElementById('f-sort'),
     list: document.getElementById('list'),
     count: document.getElementById('count'),
@@ -183,20 +263,20 @@
 
   function render() {
     const q = els.search.value.trim().toLowerCase();
-    const country = els.country.value;
-    const city = els.city.value;
-    const cuisine = els.cuisine.value;
+    const countries = els.country.getSelected();
+    const cities = els.city.getSelected();
+    const cuisines = els.cuisine.getSelected();
     const dining = els.dining.value;
-    const food = els.food.value;
-    const guide = els.guide.value;
+    const foods = els.food.getSelected();
+    const guides = els.guide.getSelected();
 
     let rows = state.data.filter(r => {
-      if (country && r.country !== country) return false;
-      if (city && r.city !== city) return false;
-      if (cuisine && !r.cuisine_tags.includes(cuisine)) return false;
+      if (countries.length && !countries.includes(r.country)) return false;
+      if (cities.length && !cities.includes(r.city)) return false;
+      if (cuisines.length && !cuisines.some(c => r.cuisine_tags.includes(c))) return false;
       if (dining && !r.dining_options.includes(dining)) return false;
-      if (!foodTierMatch(r.food, food)) return false;
-      if (guide && !(r.guide_categories || []).includes(guide)) return false;
+      if (foods.length && !foods.some(f => foodTierMatch(r.food, f))) return false;
+      if (guides.length && !guides.some(g => (r.guide_categories || []).includes(g))) return false;
       if (q) {
         const hay = [r.name, r.location_name, r.city, r.country].filter(Boolean).join(' ').toLowerCase();
         if (!hay.includes(q)) return false;
@@ -263,12 +343,38 @@
 
   state.data = data;
 
-  populateSelect(els.country, [...new Set(data.map(r => r.country).filter(Boolean))].sort());
-  populateSelect(els.city, [...new Set(data.map(r => r.city).filter(Boolean))].sort());
-  populateSelect(els.cuisine, [...new Set(data.flatMap(r => r.cuisine_tags))].sort());
+  const asOptions = values => values.map(v => ({ value: v, label: v }));
+
+  els.country = createMultiSelect(document.getElementById('msel-country'), {
+    options: asOptions([...new Set(data.map(r => r.country).filter(Boolean))].sort()),
+    allLabel: 'All countries', onChange: render
+  });
+  els.city = createMultiSelect(document.getElementById('msel-city'), {
+    options: asOptions([...new Set(data.map(r => r.city).filter(Boolean))].sort()),
+    allLabel: 'All cities', onChange: render
+  });
+  els.cuisine = createMultiSelect(document.getElementById('msel-cuisine'), {
+    options: asOptions([...new Set(data.flatMap(r => r.cuisine_tags))].sort()),
+    allLabel: 'All cuisines', onChange: render
+  });
+  els.food = createMultiSelect(document.getElementById('msel-food'), {
+    options: [
+      { value: 'gold', label: 'Gold' },
+      { value: 'silver', label: 'Silver' },
+      { value: 'bronze', label: 'Bronze' },
+      { value: 'no_star', label: 'Assessed, no star' },
+      { value: 'pending', label: 'Pending review' },
+      { value: 'unreviewed', label: 'Unreviewed' },
+    ],
+    allLabel: 'Any food status', search: false, onChange: render
+  });
+  els.guide = createMultiSelect(document.getElementById('msel-guide'), {
+    options: Object.entries(GUIDE_CATEGORY_LABEL).map(([value, label]) => ({ value, label })),
+    allLabel: 'Any Guide category', search: false, onChange: render
+  });
   populateSelect(els.dining, [...new Set(data.flatMap(r => r.dining_options))].sort());
 
-  for (const el of [els.search, els.country, els.city, els.cuisine, els.dining, els.food, els.guide, els.sort]) {
+  for (const el of [els.search, els.dining, els.sort]) {
     el.addEventListener('input', render);
     el.addEventListener('change', render);
   }
