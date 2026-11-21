@@ -33,6 +33,7 @@
      confirmed cyan (was pistachio green, then went through blue on Guide's
      side too — this file had drifted out of sync until now). */
   --cat-top_picks: #BA0B2F;
+  --cat-worth_a_try: #7A4FA3; /* purple, chosen by Hamish 'for now' 2026-11-19 (silver was the alternative) */
   --cat-gelato_guru: #03cafc;
   --cat-gone_but_not_forgotten: #9B9B93;
   --cat-desserts: #C2708A;
@@ -150,7 +151,7 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
   font-size: 0.95rem;
   color: var(--ink);
 }
-.star-intro p { max-width: 60ch; margin: 0 0 0.9rem; }
+.star-intro p { margin: 0 0 0.9rem; } /* no max-width: a 60ch cap made the intro wrap at about half the page width, unlike Guide's .guide-intro (fixed 2026-11-19) */
 .star-intro p:last-child { margin-bottom: 0; }
 .star-intro .tier-legend-label {
   font-family: Consolas, monospace;
@@ -368,6 +369,7 @@ a.section-nav-item:hover, a.section-nav-item:focus-visible {
   color: var(--paper);
 }
 .guide-cat-badge.cat-top_picks { background: var(--cat-top_picks); }
+.guide-cat-badge.cat-worth_a_try { background: var(--cat-worth_a_try); }
 .guide-cat-badge.cat-gelato_guru { background: var(--cat-gelato_guru); }
 .guide-cat-badge.cat-gone_but_not_forgotten { background: var(--cat-gone_but_not_forgotten); color: var(--ink); }
 .guide-cat-badge.cat-desserts { background: var(--cat-desserts); }
@@ -436,4 +438,43 @@ footer {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ---------- Snacks page (draft 2026-11-19) — reuses existing tokens only, no new colours ---------- */
+.type-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1.25rem 0 0; }
+.chip {
+  font: inherit; font-size: 0.78rem; padding: 0.3rem 0.75rem; cursor: pointer;
+  background: transparent; color: var(--ink); border: 1px solid var(--hairline); border-radius: 999px;
+}
+.chip:hover, .chip:focus-visible { border-color: var(--ink); }
+.chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.chip-static {
+  display: inline-block; font-size: 0.7rem; padding: 0.1rem 0.5rem; margin: 0 0.25rem 0.25rem 0;
+  color: var(--ink-soft); border: 1px solid var(--hairline); border-radius: 999px; white-space: nowrap;
+}
+.snack-tag { display: inline-block; font-size: 0.66rem; padding: 0.05rem 0.4rem; margin-left: 0.25rem; border: 1px solid var(--hairline); border-radius: 3px; color: var(--ink-soft); }
+.snack-tag-disc { color: var(--nostar-ink); border-color: var(--nostar-bg); }
+.snack-num { white-space: nowrap; }
+.col-shops { min-width: 7rem; color: var(--ink-soft); font-size: 0.78rem; }
+.col-dietary { min-width: 7rem; }
+/* Tried column hidden for now (Hamish, 2026-11-19) - data/markup untouched, remove this rule to bring it back */
+.col-tried { display: none; }
+.star-intro .snack-note { color: var(--ink-soft); font-size: 0.72rem; margin: 0.9rem 0 0; }
+.snack-pack { color: var(--ink-soft); font-size: 0.66rem; white-space: normal; min-width: 6.5rem; margin-top: 0.15rem; }
+
+/* Snacks table: compact so the rating etc. are visible without side-scrolling (Hamish, 2026-11-19) */
+.rtable-snacks th, .rtable-snacks td { padding-left: 0.55rem; padding-right: 0.55rem; }
+.rtable-snacks .col-name { min-width: 9.5rem; }
+.rtable-snacks .col-shops, .rtable-snacks .col-dietary { min-width: 5.5rem; }
+.rtable-snacks .col-country, .rtable-snacks .col-category { min-width: 4.5rem; }
+.rtable-snacks .col-tier { min-width: 5rem; }
+.rtable-snacks .col-guide-cats { min-width: 6.5rem; }
+.rtable-snacks .snack-num { white-space: normal; min-width: 4.5rem; }
+.rtable-snacks.no-guide .col-guide-cats { display: none; }
+.snack-flavour { color: var(--ink-soft); font-size: 0.8rem; margin-top: 0.15rem; }
+.snack-tier-inline { display: none; margin-top: 0.4rem; }
+/* Below ~1100px the Tier column would be pushed off-screen by side-scrolling, so the badge moves under the snack name instead (column hidden) */
+@media (max-width: 1100px) {
+  .snack-tier-inline { display: inline-block; }
+  .rtable-snacks .col-tier { display: none; }
 }

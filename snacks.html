@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hamilin Star — Snacks</title>
+<meta name="description" content="Crisps, chocolate, biscuits and other snacks I've rated — by type, country, price and where to buy.">
+<link rel="canonical" href="https://hamilinstar.com/snacks.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Hamilin Star">
+<meta property="og:title" content="Hamilin Star — Snacks">
+<meta property="og:description" content="Crisps, chocolate, biscuits and other snacks I've rated — by type, country, price and where to buy.">
+<meta property="og:url" content="https://hamilinstar.com/snacks.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hamilin Star — Snacks">
+<meta name="twitter:description" content="Crisps, chocolate, biscuits and other snacks I've rated — by type, country, price and where to buy.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>%E2%AD%90</text></svg>">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="page">
+
+  <h1 class="sr-only">Hamilin Star — snacks rated by type, country, price and where to buy</h1>
+
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="wordmark display"><a href="/">Hamilin Star</a></div>
+      <nav class="crumbs">
+        <a class="hub-link" href="https://hamilin.com">Hub</a>
+      </nav>
+    </div>
+    <nav class="section-nav mono" aria-label="Star sections">
+      <a class="section-nav-item" href="index.html">Restaurants</a>
+      <a class="section-nav-item" href="stars.html">All Stars Awarded</a>
+      <span class="section-nav-item active">Snacks</span>
+      <a class="nav-guide-link" href="https://hamilinguide.com" target="_blank" rel="noopener">See the highlights on Hamilin Guide ↗</a>
+    </nav>
+  </header>
+
+  <section class="star-intro">
+    <p>This is a simple table for exploring my snack ratings (where completed). Hamilin Stars can only be awarded by Hamilin (aka Hamish).</p>
+    <p>If you like this and want to support me, <a class="support-link" href="https://buymeacoffee.com/hamilingui6" target="_blank" rel="noopener">buy me a gelato ↗</a></p>
+    <p class="tier-legend-label">Definitions</p>
+    <div class="tier-legend">
+      <div class="tier-legend-row"><span class="tier-badge gold">Gold</span> Amazing! Must Try!</div>
+      <div class="tier-legend-row"><span class="tier-badge silver">Silver</span> Pretty Good! Worth Trying!</div>
+      <div class="tier-legend-row"><span class="tier-badge bronze">Bronze</span> Just About Acceptable!</div>
+      <div class="tier-legend-row"><span class="tier-badge nostar">No Star</span> Don't get this. This snack should not be served again.</div>
+    </div>
+    <p class="mono snack-note">Dietary tags are as labelled on the pack when tried. Recipes change and differ by country, so check the pack and don't rely on this for allergies.</p>
+  </section>
+
+  <div id="type-chips" class="type-chips mono" role="group" aria-label="Snack type"></div>
+
+  <section class="toolbar" aria-label="Filter snacks">
+    <input type="search" id="f-q" class="mono" placeholder="Brand, product or flavour…" aria-label="Brand, product or flavour">
+    <select id="f-country" class="mono" aria-label="Country"><option value="">All countries</option></select>
+    <select id="f-dietary" class="mono" aria-label="Dietary"><option value="">Any dietary</option></select>
+    <select id="f-shop" class="mono" aria-label="Where to buy"><option value="">Any shop</option></select>
+    <select id="f-tier" class="mono" aria-label="Tier">
+      <option value="">Any tier</option>
+      <option value="gold">Gold</option>
+      <option value="silver">Silver</option>
+      <option value="bronze">Bronze</option>
+      <option value="no_star">No star</option>
+      <option value="pending">Pending</option>
+    </select>
+    <select id="f-avail" class="mono" aria-label="Availability">
+      <option value="">Any availability</option>
+      <option value="current">Still made</option>
+      <option value="discontinued">Discontinued</option>
+    </select>
+    <select id="f-sort" class="mono" aria-label="Sort by">
+      <option value="tier">Sort: Gold first</option>
+      <option value="name">Sort: Brand A–Z</option>
+      <option value="per100">Sort: Cheapest per 100g</option>
+      <option value="date">Sort: Most recently tried</option>
+    </select>
+  </section>
+
+  <p id="count" class="mono count"></p>
+
+  <div class="table-wrap" aria-live="polite">
+    <table class="rtable rtable-snacks">
+      <thead>
+        <tr>
+          <th class="col-name">Snack</th>
+          <th class="col-country">Made in</th>
+          <th class="col-category">Type</th>
+          <th>Size</th>
+          <th>Price</th>
+          <th class="col-shops">Where to buy</th>
+          <th class="col-dietary">Dietary</th>
+          <th class="col-tier">Tier</th>
+          <th class="col-guide-cats">Guide</th>
+          <th class="col-tried">Tried</th>
+        </tr>
+      </thead>
+      <tbody id="list"></tbody>
+    </table>
+  </div>
+  <p id="empty" class="mono empty" hidden>No snacks match those filters.</p>
+
+  <footer>
+    <p class="mono">© 2026 Hamish Lacmane. All rights reserved.</p>
+  </footer>
+
+</div>
+
+<script>
+(async function () {
+  const GUIDE_CATEGORY_LABEL = {
+    top_picks: 'Top Picks',
+    worth_a_try: 'Worth a Try',
+    gelato_guru: "The Gelato Guru's Faves",
+    gone_but_not_forgotten: 'Gone But Not Forgotten',
+    desserts: 'Desserts',
+    amazing_value: 'Amazing Value',
+    overrated: 'Overrated'
+  };
+  const TIER_ORDER = { gold: 0, silver: 1, bronze: 2, no_star: 3, pending: 4 };
+  const TIER_LABEL = { gold: 'Gold', silver: 'Silver', bronze: 'Bronze', no_star: 'No star', pending: 'Pending' };
+  const CURRENCY = { GBP: '£', EUR: '€', USD: '$', JPY: '¥' };
+
+  const els = {
+    chips: document.getElementById('type-chips'),
+    q: document.getElementById('f-q'),
+    country: document.getElementById('f-country'),
+    dietary: document.getElementById('f-dietary'),
+    shop: document.getElementById('f-shop'),
+    tier: document.getElementById('f-tier'),
+    avail: document.getElementById('f-avail'),
+    sort: document.getElementById('f-sort'),
+    list: document.getElementById('list'),
+    count: document.getElementById('count'),
+    empty: document.getElementById('empty'),
+  };
+  const state = { data: [], type: '' };
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+  function populateSelect(el, values) {
+    for (const v of values) {
+      const opt = document.createElement('option');
+      opt.value = v;
+      opt.textContent = v;
+      el.appendChild(opt);
+    }
+  }
+  function money(amount, currency) {
+    if (amount === null || amount === undefined) return '—';
+    const sym = CURRENCY[currency];
+    const n = Number(amount);
+    if (currency === 'GBP' && n < 1) return `${Math.round(n * 100)}p`;
+    const text = n.toFixed(currency === 'JPY' ? 0 : 2);
+    return sym ? `${sym}${text}` : `${text} ${currency || ''}`.trim();
+  }
+  function per100(r) {
+    if (r.price_per_100 === null || r.price_per_100 === undefined) return '—';
+    const unit = r.size_unit === 'ml' ? '100ml' : '100g';
+    const n = Number(r.price_per_100);
+    const sym = CURRENCY[r.currency];
+    if (r.currency === 'GBP' && n < 1) return `${(n * 100).toFixed(1).replace(/\.0$/, '')}p`;
+    return `${sym ? sym : ''}${n.toFixed(r.currency === 'JPY' ? 0 : 2)}${sym ? '' : ' ' + (r.currency || '')}`;
+  }
+  function hasDietary(r, tag) {
+    if (!tag) return true;
+    if (r.dietary.includes(tag)) return true;
+    return tag === 'Vegetarian' && r.dietary.includes('Vegan'); // Vegan counts as Vegetarian
+  }
+  function guideCatBadges(categories) {
+    if (!categories || !categories.length) return '';
+    return `<div class="guide-cats">${categories.map(c =>
+      `<span class="guide-cat-badge cat-${c}">${escapeHtml(GUIDE_CATEGORY_LABEL[c] || c)}</span>`
+    ).join('')}</div>`;
+  }
+  function nameHtml(r) {
+    let out = `<span class="rname display">${escapeHtml(r.brand)} ${escapeHtml(r.product)}</span>`;
+    if (r.special_edition) out += ` <span class="snack-tag snack-tag-edition mono">${escapeHtml(r.edition_note || 'Special edition')}</span>`;
+    if (r.discontinued) out += ` <span class="snack-tag snack-tag-disc mono">Discontinued</span>`;
+    return out;
+  }
+  function sizeText(r) {
+    return r.size_amount === null || r.size_amount === undefined ? '—' : `${Number(r.size_amount)}${r.size_unit}`;
+  }
+
+  function renderChips(types) {
+    const items = [{ v: '', label: 'All' }].concat(types.map(t => ({ v: t, label: t })));
+    els.chips.innerHTML = items.map(i =>
+      `<button type="button" class="chip${state.type === i.v ? ' on' : ''}" data-type="${escapeHtml(i.v)}">${escapeHtml(i.label)}</button>`
+    ).join('');
+  }
+
+  function render() {
+    const q = els.q.value.trim().toLowerCase();
+    const country = els.country.value, dietary = els.dietary.value, shop = els.shop.value;
+    const tier = els.tier.value, avail = els.avail.value;
+
+    let rows = state.data.filter(r => {
+      if (state.type && r.type !== state.type) return false;
+      if (country && r.country !== country) return false;
+      if (!hasDietary(r, dietary)) return false;
+      if (shop && !r.retailers.includes(shop) && !r.retailers.includes('Most shops')) return false;
+      if (tier && r.status !== tier) return false;
+      if (avail === 'discontinued' && !r.discontinued) return false;
+      if (avail === 'current' && r.discontinued) return false;
+      if (q && !`${r.brand} ${r.product} ${r.flavour || ''}`.toLowerCase().includes(q)) return false;
+      return true;
+    });
+
+    const sort = els.sort.value;
+    const byName = (a, b) => a.brand.localeCompare(b.brand) || a.product.localeCompare(b.product) || (a.flavour || '').localeCompare(b.flavour || '');
+    rows = rows.slice().sort((a, b) => {
+      if (sort === 'name') return byName(a, b);
+      if (sort === 'per100') {
+        const x = a.price_per_100 === null ? Infinity : Number(a.price_per_100);
+        const y = b.price_per_100 === null ? Infinity : Number(b.price_per_100);
+        return (x - y) || byName(a, b);
+      }
+      if (sort === 'date') return (b.tried_date || '').localeCompare(a.tried_date || '') || byName(a, b);
+      return (TIER_ORDER[a.status] - TIER_ORDER[b.status]) || byName(a, b);
+    });
+
+    els.count.textContent = `${rows.length} of ${state.data.length} snacks`;
+    els.empty.hidden = rows.length !== 0;
+
+    els.list.innerHTML = rows.map(r => `
+      <tr>
+        <td class="col-name">${nameHtml(r)}${r.flavour ? `<div class="snack-flavour">${escapeHtml(r.flavour)}</div>` : ''}<span class="snack-tier-inline star star-${r.status.replace('_', '')}">${TIER_LABEL[r.status]}</span></td>
+        <td class="col-country mono">${escapeHtml(r.country)}</td>
+        <td class="col-category mono">${r.type ? escapeHtml(r.type) : ''}</td>
+        <td class="mono snack-num">${sizeText(r)}${r.pack_note ? `<div class="snack-pack">${escapeHtml(r.pack_note)}</div>` : ''}</td>
+        <td class="mono snack-num">${money(r.price, r.currency)}${per100(r) !== '—' ? `<div class="snack-pack">${per100(r)} per ${r.size_unit === 'ml' ? '100ml' : '100g'}</div>` : ''}</td>
+        <td class="col-shops mono">${r.retailers.length ? escapeHtml(r.retailers.join(', ')) : ''}</td>
+        <td class="col-dietary">${r.dietary.map(d => `<span class="chip-static mono">${escapeHtml(d)}</span>`).join('')}</td>
+        <td class="col-tier"><span class="star star-${r.status.replace('_', '')}">${TIER_LABEL[r.status]}</span></td>
+        <td class="col-guide-cats">${guideCatBadges(r.categories)}</td>
+        <td class="col-tried col-date mono">${r.tried_date ? escapeHtml(r.tried_date) : '—'}</td>
+      </tr>`).join('');
+  }
+
+  let data;
+  try {
+    const res = await fetch('data/snacks.json', { cache: 'no-store' });
+    data = await res.json();
+  } catch (err) {
+    els.count.textContent = '';
+    els.list.innerHTML = `<tr><td colspan="11" class="mono empty">Couldn't load snack data (${escapeHtml(err.message)}).</td></tr>`;
+    return;
+  }
+  state.data = data;
+  // No Guide column until at least one snack has a Guide category (keeps the table narrow enough to show everything)
+  if (!data.some(r => (r.categories || []).length)) document.querySelector('.rtable').classList.add('no-guide');
+
+  const typeOrder = ['Chocolate', 'Sweets and candy', 'Crisps and savoury', 'Biscuits', 'Bars', 'Nuts and popcorn', 'Other'];
+  const present = [...new Set(data.map(r => r.type).filter(Boolean))];
+  renderChips(typeOrder.filter(t => present.includes(t)).concat(present.filter(t => !typeOrder.includes(t))));
+
+  populateSelect(els.country, [...new Set(data.map(r => r.country).filter(Boolean))].sort());
+  populateSelect(els.dietary, [...new Set(data.flatMap(r => r.dietary))].sort());
+  populateSelect(els.shop, [...new Set(data.flatMap(r => r.retailers))].filter(s => s !== 'Most shops').sort());
+
+  const qParam = new URLSearchParams(location.search).get('q');
+  if (qParam) els.q.value = qParam;
+
+  els.chips.addEventListener('click', e => {
+    const b = e.target.closest('.chip');
+    if (!b) return;
+    state.type = b.getAttribute('data-type');
+    els.chips.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === b));
+    render();
+  });
+  for (const el of [els.q, els.country, els.dietary, els.shop, els.tier, els.avail, els.sort]) {
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  }
+  render();
+})();
+</script>
+
+</body>
+</html>
